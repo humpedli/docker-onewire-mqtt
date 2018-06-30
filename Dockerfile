@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:14.04
 
 # update apt
 RUN apt-get update
