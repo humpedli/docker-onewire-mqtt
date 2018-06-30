@@ -1,3 +1,0 @@
-ow==1.3.4
-mosquitto==2.9p8
-setproctitle==1.1.8

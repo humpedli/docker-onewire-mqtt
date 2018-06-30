@@ -1,13 +1,18 @@
 FROM ubuntu:18.04
 
+# update apt
+RUN apt-get update
+
+# install git and clone repository
+RUN apt-get install -y git
+RUN mkdir /app
+RUN git clone https://github.com/dcbo/onewire-to-mqtt.git /app
+WORKDIR /app
+
 # install required modules
 RUN apt-get install -y python-ow
 RUN apt-get install -y python-mosquitto 
 RUN apt-get install -y python-setproctitle
-
-# copy all files into workdir
-WORKDIR /usr/src/app
-COPY . .
 
 # cleanup
 RUN apt-get clean && \
