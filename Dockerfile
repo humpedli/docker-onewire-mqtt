@@ -1,4 +1,7 @@
-FROM resin/rpi-raspbian
+FROM resin/raspberrypi3-python:2
+
+
+RUN [ “cross-build-start” ]
 
 # update apt
 RUN apt-get update
@@ -18,5 +21,7 @@ RUN apt-get install -y python-setproctitle
 RUN apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     rm -rf /tmp/*
+
+RUN [ “cross-build-end" ]
 
 CMD [ "python", "./onewire-to-mqtt.py config.cfg", "tail -f /var/log/onewire-to-mqtt.log" ]
