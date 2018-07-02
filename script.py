@@ -17,9 +17,9 @@ import socket
 import time
 import sys
 import paho.mqtt.client as mqtt
+import pyownet.protocol as ow
 import argparse
 import ConfigParser
-import ow
 import setproctitle
 from datetime import datetime, timedelta
 
@@ -84,12 +84,12 @@ def on_mqtt_publish(mosq, obj, mid):
 #   3: Refused - server unavailable                                 -> RETRY
 #   4: Refused - bad user name or password (MQTT v3.1 broker only)  -> EXIT
 #   5: Refused - not authorised (MQTT v3.1 broker only)             -> EXIT
-def on_mqtt_connect(mosq, obj, return_code):    
+def on_mqtt_connect(self, mosq, obj, return_code):    
     logging.debug("on_connect return_code: " + str(return_code))
     if return_code == 0:
         logging.info("Connected to %s:%s", MQTT_HOST, MQTT_PORT)
         # set Lastwill 
-        MQTTC.publish(STATUSTOPIC, "1 - connected", retain=True)
+        self.publish(STATUSTOPIC, "1 - connected", retain=True)
         # process_connection()
     elif return_code == 1:
         logging.info("Connection refused - unacceptable protocol version")
@@ -129,12 +129,12 @@ def on_mqtt_log(mosq, obj, level, string):
 
 
 # clean disconnect on SIGTERM or SIGINT. 
-def cleanup(signum, frame):
+def cleanup(self, signum, frame):
     logging.info("Disconnecting from broker")
     # Publish a retained message to state that this client is offline
-    MQTTC.publish(STATUSTOPIC, "0 - DISCONNECT", retain=True)
-    MQTTC.disconnect()
-    MQTTC.loop_stop()
+    self.publish(STATUSTOPIC, "0 - DISCONNECT", retain=True)
+    self.disconnect()
+    self.loop_stop()
     logging.info("Exiting on signal %d", signum)
     sys.exit(signum)
 
@@ -144,7 +144,7 @@ def mqtt_connect():
     logging.debug("Connecting to %s:%s", MQTT_HOST, MQTT_PORT)
     # Set the last will before connecting
     MQTTC.will_set(STATUSTOPIC, "0 - LASTWILL", qos=0, retain=True)
-    result = MQTTC.connect(MQTT_HOST, MQTT_PORT, 60, True)
+    result = MQTTC.connect(MQTT_HOST, MQTT_PORT, 60)
     if result != 0:
         logging.info("Connection failed with error code %s. Retrying", result)
         time.sleep(10)
@@ -172,25 +172,21 @@ def main_loop():
     # Connect to the broker and enter the main loop
     mqtt_connect()
 
-    # Connect to the broker and enter the main loop
-    ow.init(("%s:%s") % (OW_HOST, str(OW_PORT))) 
-    ow.error_level(ow.error_level.fatal)
-    ow.error_print(ow.error_print.stderr)
+    # Connect to ow server
+    owproxy = ow.proxy(("host='%s', port=%s") % (OW_HOST, str(OW_PORT)))
 
     while True:
         # simultaneous temperature conversion
-        ow._put("/simultaneous/temperature","1")
-        item = 0        
+        owproxy.write("/simultaneous/temperature","1")
+
         # iterate over all sensors
         for owid, owtopic in SENSORS.items():
             logging.debug(("Querying %s : %s") % (owid, owtopic))
-            try:             
-                sensor = ow.Sensor(owid)                 
-                owtemp = sensor.temperature            
+            try:
+                owtemp = owproxy.read(("/%s/temperature") % (owid))        
                 logging.debug(("Sensor %s : %s") % (owid, owtemp))
                 MQTTC.publish(owtopic, owtemp)
-                
-            except ow.exUnknownSensor:
+            except ow.Error:
                 logging.info("Threw an unknown sensor exception for device %s - %s. Continuing", owid, owname)
                 continue
             
