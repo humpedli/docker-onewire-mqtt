@@ -1,4 +1,4 @@
-FROM resin/raspberrypi3-python:2
+FROM resin/armv7hf-debian
 
 
 RUN [ “cross-build-start” ]
@@ -13,6 +13,7 @@ RUN git clone https://github.com/dcbo/onewire-to-mqtt.git /app
 WORKDIR /app
 
 # install required modules
+RUN apt-get install -y python
 RUN apt-get install -y python-ow
 RUN apt-get install -y python-mosquitto 
 RUN apt-get install -y python-setproctitle
