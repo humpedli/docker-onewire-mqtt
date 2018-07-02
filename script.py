@@ -185,7 +185,7 @@ def main_loop():
             try:
                 owtemp = owproxy.read(("/%s/temperature") % (owid))        
                 logging.debug(("Sensor %s : %s") % (owid, owtemp.strip()))
-                MQTTC.publish(owtopic, ("{:.1f}") % (float(owtemp.strip())))
+                MQTTC.publish(owtopic, "{:.1f}".format(float(owtemp.strip())))
             except ow.Error:
                 logging.info("Threw an unknown sensor exception for device %s - %s. Continuing", owid, owname)
                 continue
