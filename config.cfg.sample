@@ -13,11 +13,11 @@ statustopic = onewire-to-mqtt/status
 
 # Onewire related config 
 [onewire]
-host= ::1
+host= localhost
 port = 4304      
 
 [log]
-verbose = false
+verbose = true
 logfile = /var/log/onewire-to-mqtt.log
 
 # list of sensors to be polled and according mqtt topics 

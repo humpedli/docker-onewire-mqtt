@@ -173,7 +173,7 @@ def main_loop():
     mqtt_connect()
 
     # Connect to ow server
-    owproxy = ow.proxy(("host='%s', port=%s") % (OW_HOST, str(OW_PORT)))
+    owproxy = ow.proxy(OW_HOST, OW_PORT)
 
     while True:
         # simultaneous temperature conversion
@@ -184,8 +184,8 @@ def main_loop():
             logging.debug(("Querying %s : %s") % (owid, owtopic))
             try:
                 owtemp = owproxy.read(("/%s/temperature") % (owid))        
-                logging.debug(("Sensor %s : %s") % (owid, owtemp))
-                MQTTC.publish(owtopic, owtemp)
+                logging.debug(("Sensor %s : %s") % (owid, owtemp.strip()))
+                MQTTC.publish(owtopic, owtemp.strip())
             except ow.Error:
                 logging.info("Threw an unknown sensor exception for device %s - %s. Continuing", owid, owname)
                 continue
