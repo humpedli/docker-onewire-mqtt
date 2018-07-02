@@ -1,4 +1,4 @@
-FROM arm32v7/ubuntu:14.04
+FROM resin/raspberrypi3-python:2
 
 # update apt
 RUN apt-get update
