@@ -1,7 +1,7 @@
 FROM resin/armv7hf-debian
 
 
-RUN [ “cross-build-start” ]
+RUN [ "cross-build-start" ]
 
 # update apt
 RUN apt-get update
@@ -23,6 +23,6 @@ RUN apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     rm -rf /tmp/*
 
-RUN [ “cross-build-end" ]
+RUN [ "cross-build-end" ]
 
 CMD [ "python", "./onewire-to-mqtt.py config.cfg", "tail -f /var/log/onewire-to-mqtt.log" ]
