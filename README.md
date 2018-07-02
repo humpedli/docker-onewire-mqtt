@@ -19,7 +19,7 @@ Don't forget to create configuration file first (there is a sample in the reposi
 
 ```
 docker run --name=onewire-mqtt \
-  --restart-always \
+  --restart=always \
   --network=host \
   -v <path_to_config>/config.cfg:/usr/src/app/config.cfg \
   -v /etc/localtime:/etc/localtime:ro \
