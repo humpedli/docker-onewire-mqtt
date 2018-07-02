@@ -12,4 +12,4 @@ RUN pip install -r requirements.txt
 
 RUN [ "cross-build-end" ]
 
-CMD [ "python ./script.py config.cfg" ]
+CMD [ "bash", "python ./script.py config.cfg" ]
