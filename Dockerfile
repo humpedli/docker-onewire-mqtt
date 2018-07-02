@@ -1,4 +1,4 @@
-FROM resin/raspberrypi3-python:2
+FROM resin/rpi-raspbian
 
 # update apt
 RUN apt-get update
