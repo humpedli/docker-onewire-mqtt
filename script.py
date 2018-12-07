@@ -129,12 +129,12 @@ def on_mqtt_log(mosq, obj, level, string):
 
 
 # clean disconnect on SIGTERM or SIGINT. 
-def cleanup(self, signum, frame):
+def cleanup(signum, frame):
     logging.info("Disconnecting from broker")
     # Publish a retained message to state that this client is offline
-    self.publish(STATUSTOPIC, "0 - DISCONNECT", retain=True)
-    self.disconnect()
-    self.loop_stop()
+    MQTTC.publish(STATUSTOPIC, "0 - DISCONNECT", retain=True)
+    MQTTC.disconnect()
+    MQTTC.loop_stop()
     logging.info("Exiting on signal %d", signum)
     sys.exit(signum)
 
