@@ -187,7 +187,7 @@ def main_loop():
                 logging.debug(("Sensor %s : %s") % (owid, owtemp.strip()))
                 MQTTC.publish(owtopic, "{:.1f}".format(float(owtemp.strip())))
             except ow.Error:
-                logging.info("Threw an unknown sensor exception for device %s - %s. Continuing", owid, owname)
+                logging.info("Threw an unknown sensor exception for device %s - %s. Continuing", owid, owtopic)
                 continue
             
             time.sleep(float(POLLINTERVAL) / len(SENSORS))
